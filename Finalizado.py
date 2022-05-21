@@ -1,16 +1,55 @@
 from os import remove
 from tkinter import Button
 import matplotlib.pyplot as plt
-import plot_pontos as g
+from grafo import Graph
 import re
 
-from collections import defaultdict
+#from collections import defaultdict
 
 from haversine import haversine, Unit
-from matplotlib.backend_bases import MouseButton
+from matplotlib.backend_bases import MouseButton    
+    
+g = Graph()
+# busca o arquivo na pasta do projeto
 
-g = g.Graph()
-          
+
+
+
+file_vertex = "map.osm.txt"
+
+file_edges = "uesb.adjlist"
+plot_ponts = "map.osm.txt"
+
+
+
+
+with open(file_vertex) as fp:
+    for line in fp:
+        points = re.findall(r'[-+]?\d+.\d+', line)
+        g.add_vertex(points[0],float(points[1]),float(points[2]))
+
+with open(file_edges) as fp:
+    for line in fp:
+        points = re.findall(r'[-+]?\d+', line)
+        
+        for point in points[1:]:
+            deVertex = g.get_vertex(points[0])
+            tamanho = points
+            pointVertex = g.get_vertex(point)
+            g.add_edge(tamanho[0], point, haversine((deVertex.lat, deVertex.lon), (pointVertex.lat, pointVertex.lon)))
+ 
+                    
+
+with open(plot_ponts) as fp:
+    x = list()
+    y = list()
+    for i in g.get_vertices():
+        x.append(g.get_vertex(i).lat)
+        y.append(g.get_vertex(i).lon)
+    print("X: ", x, "Y: ", y)
+
+
+
 def vertex_mais_proximo_do_click(event):
     menor = 1e309
 
@@ -35,8 +74,8 @@ def onclick(event, clickx=list(),clicky=list(), ponto=list()):
         click.append(event.ydata)
 
         ponto.append(vertex_mais_proximo_do_click(click))
-        print(event.xdata, event.ydata)
-        print(len(ponto))
+        #print(event.xdata, event.ydata)
+        #print(len(ponto))
         if len(ponto) == 2:
 
             dist, caminho = g.min_path(ponto[0], ponto[1])
@@ -61,8 +100,8 @@ def onclick(event, clickx=list(),clicky=list(), ponto=list()):
             clicky.clear()
          
       
-fig, ax = plt.subplots()   
 
-fig.canvas.mpl_connect('button_press_event', onclick)
+fig, ax = plt.subplots()
+p, = plt.plot(x, y, 'ro')
+fig.canvas.mpl_connect('button_press_event', onclick)  # adiciona o evento
 plt.show()
-    

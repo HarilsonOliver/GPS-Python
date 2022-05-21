@@ -1,7 +1,9 @@
 from os import remove
 from tkinter import Button
 import matplotlib.pyplot as plt
+import numpy as np
 import re
+
 from collections import defaultdict
 from vertex_mapa import Vertex
 from haversine import haversine, Unit
@@ -10,10 +12,15 @@ from matplotlib.backend_bases import MouseButton
 
 
 g = Graph()
+coordenadasX = []
+coordenadasY = []
+path = None
 
 file_name = "map.osm.txt"
 fig = plt.figure()
+
 ax = fig.add_subplot(1,1,1)
+
 
 with open(file_name) as fp:
     for line in fp:
@@ -45,12 +52,16 @@ with open(file_name) as fp:
             pointVertex = g.get_vertex(point)
             g.add_edge(de, point, calc_dist(deVertex, pointVertex))
           
+            
+
 def vertex_mais_proximo_do_click(event):
+    
     
     file_name = "map.osm.txt"
     print(event)
     id = 0
     ix, iy = float(event[0]), float(event[1])
+    #ix, iy = float(event.xdata), float(event.ydata)
     menor = 1e309
     with open(file_name) as fp:
         for line in fp:
@@ -58,7 +69,7 @@ def vertex_mais_proximo_do_click(event):
             menor_valor= haversine((ix, iy),(float(point[1]),float(point[2])))
             if menor>menor_valor:
                 menor = menor_valor
-                id = point[0]
+                id = int(point[0])
     print(menor, id)
     return menor
          
@@ -100,5 +111,12 @@ def onclick(event, clickx=list(),clicky=list(), ponto=list()):
             clicky.clear()
 
             
+
+
+
+          
+      
+ 
+
 fig.canvas.mpl_connect('button_press_event', onclick)
 plt.show()
