@@ -52,9 +52,11 @@ with open(plot_ponts) as fp:
 
 def vertex_mais_proximo_do_click(event):
     menor = 1e309
-
+    point = 0
     for i in g.get_edges(): # Pega as arestas
+        
         vertex = g.get_vertex(i[0]) # pega os vertex do grafo
+        
         menor_valor = haversine((event[0], event[1]), (float(vertex.lat), float(vertex.lon)))
         if menor_valor < menor:  # verifica qual o ponto de mais próximo do click
             menor = menor_valor
